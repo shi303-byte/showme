@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ profile.display_name or target_user.username }} (@{{ target_user.username }}) | ShowMe</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --accent: {{ profile.accent_color or '#8b5cf6' }};
+      --accent-glow: {{ profile.accent_color or '#8b5cf6' }}44;
+      --font-stack: '{{ profile.font_family or 'JetBrains Mono' }}', sans-serif;
+    }
+
+    body {
+      font-family: var(--font-stack);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #06070a;
+      {% if profile.background_url %}
+        background-image: url('{{ profile.background_url }}');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+      {% endif %}
+      color: {{ profile.text_color or '#f8fafc' }};
+      padding: 2rem 1rem;
+      position: relative;
+    }
+
+    .profile-card {
+      width: 100%;
+      max-width: 580px;
+      background: rgba(13, 16, 24, {{ profile.card_opacity }});
+      backdrop-filter: blur({{ profile.card_blur }}px);
+      -webkit-backdrop-filter: blur({{ profile.card_blur }}px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: {{ profile.card_border_radius }}px;
+      overflow: hidden;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), 0 0 40px var(--accent-glow);
+      animation: enterFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes enterFade {
+      from { opacity: 0; transform: translateY(20px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .profile-banner {
+      height: 170px;
+      width: 100%;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.2));
+      {% if profile.banner_url %}
+        background-image: url('{{ profile.banner_url }}');
+        background-size: cover;
+        background-position: center;
+      {% endif %}
+      position: relative;
+    }
+
+    .profile-body {
+      padding: 0 2rem 2.5rem;
+      position: relative;
+      margin-top: -60px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1.25rem;
+    }
+
+    .avatar-img {
+      width: 110px;
+      height: 110px;
+      border-radius: 22px;
+      object-fit: cover;
+      border: 3px solid #0d1018;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      background: #161a23;
+    }
+
+    .social-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1.5rem 0;
+    }
+
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.5rem 0.85rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .social-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px var(--accent-glow);
+    }
+
+    .inv-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1.2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      margin-bottom: 0.6rem;
+      transition: all 0.2s ease;
+    }
+
+    .inv-list-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(3px);
+    }
+
+    .click-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 7, 10, 0.95);
+      backdrop-filter: blur(25px);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    {{ profile.custom_css or '' }}
+  </style>
+</head>
+<body>
+
+  {% if profile.audio_url and profile.audio_autoplay %}
+  <div id="click-to-enter-overlay" class="click-overlay">
+    <div style="text-align: center;">
+      <div style="font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.75rem;">
+        [ Click To Enter ]
+      </div>
+      <div style="font-size: 0.85rem; color: #94a3b8; font-family: 'JetBrains Mono', monospace;">
+        Establishing audio stream &bull; {{ profile.audio_title or 'Soundtrack' }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <canvas id="ambient-canvas" class="ambient-canvas"></canvas>
+
+  <div class="profile-card">
+    <div class="profile-banner"></div>
+
+    <div class="profile-body">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div class="avatar-wrapper">
+          <img src="{{ profile.avatar_url or 'https://api.dicebear.com/7.x/bottts/svg?seed=' + target_user.username }}" alt="Avatar" class="avatar-img">
+        </div>
+        <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; align-items: center;">
+          {% if target_user.is_owner %}
+            <span class="owner-pill">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              ARCHITECT OWNER
+            </span>
+          {% endif %}
+          <div style="font-size: 0.75rem; color: #64748b; font-family: 'JetBrains Mono', monospace; display: flex; align-items: center; gap: 0.3rem;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            {{ profile.views }}
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 0.75rem;">
+        <h1 style="font-size: 1.6rem; font-weight: 800; font-family: 'Syne', sans-serif; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 0.5rem;">
+          {{ profile.display_name or target_user.username }}
+          {% if target_user.is_verified %}
+            <span class="verified-pill" title="Verified Operative">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+          {% endif %}
+        </h1>
+        <div style="font-size: 0.85rem; color: #64748b; font-family: 'JetBrains Mono', monospace;">
+          @{{ target_user.username }}
+        </div>
+      </div>
+
+      {% if profile.badges %}
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.25rem;">
+          {% for b in profile.badges %}
+            <span style="font-size: 0.7rem; font-weight: 600; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.09); padding: 0.2rem 0.5rem; border-radius: 6px; color: #cbd5e1;">
+              {{ b }}
+            </span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if profile.bio %}
+        <div style="font-size: 0.9rem; line-height: 1.6; color: #cbd5e1; white-space: pre-wrap; margin-bottom: 1.5rem;">{{ profile.bio }}</div>
+      {% endif %}
+
+      {% if profile.socials %}
+        <div class="social-bar">
+          {% if profile.socials.get('discord') %}
+            <div class="social-btn" title="Discord: {{ profile.socials.discord }}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.893.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+              <span>{{ profile.socials.discord }}</span>
+            </div>
+          {% endif %}
+          {% if profile.socials.get('twitter') %}
+            <a href="https://x.com/{{ profile.socials.twitter }}" target="_blank" class="social-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <span>@{{ profile.socials.twitter }}</span>
+            </a>
+          {% endif %}
+          {% if profile.socials.get('github') %}
+            <a href="https://github.com/{{ profile.socials.github }}" target="_blank" class="social-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              <span>{{ profile.socials.github }}</span>
+            </a>
+          {% endif %}
+          {% if profile.socials.get('telegram') %}
+            <a href="https://t.me/{{ profile.socials.telegram }}" target="_blank" class="social-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+              <span>{{ profile.socials.telegram }}</span>
+            </a>
+          {% endif %}
+          {% if profile.socials.get('spotify') %}
+            <a href="https://open.spotify.com/user/{{ profile.socials.spotify }}" target="_blank" class="social-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              <span>Spotify</span>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if invites %}
+        <div style="margin-top: 1.5rem;">
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; margin-bottom: 0.6rem; font-weight: 700;">Vanity Portals</div>
+          {% for inv in invites %}
+            <a href="/inv/{{ inv.slug }}" target="_blank" class="inv-list-item">
+              <div>
+                <div style="font-weight: 600; font-size: 0.9rem; color: #fff;">{{ inv.custom_title or '/inv/' + inv.slug }}</div>
+                <div style="font-size: 0.75rem; color: #64748b; font-family: 'JetBrains Mono', monospace;">/inv/{{ inv.slug }}</div>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if profile.custom_links %}
+        <div style="margin-top: 1.5rem;">
+          {% for l in profile.custom_links %}
+            <a href="{{ l.url }}" target="_blank" class="inv-list-item">
+              <span style="font-weight: 600; font-size: 0.85rem;">{{ l.label }}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
+        <a href="/" style="font-size: 0.75rem; color: #64748b; letter-spacing: 0.05em; font-family: 'Syne', sans-serif;">POWERED BY SHOWME</a>
+      </div>
+    </div>
+  </div>
+
+  {% if profile.audio_url %}
+  <div class="audio-player-hud">
+    <audio id="profile-audio" src="{{ profile.audio_url }}" {% if profile.audio_loop %}loop{% endif %} preload="metadata"></audio>
+    <button id="audio-toggle-btn" style="background: var(--accent); border: none; color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+    </button>
+    <div style="flex: 1; min-width: 0;">
+      <div style="font-size: 0.8rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff;">{{ profile.audio_title or 'Soundtrack' }}</div>
+      <div style="font-size: 0.7rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ profile.audio_artist or 'Unknown Artist' }}</div>
+    </div>
+    <div id="audio-eq" class="equalizer paused">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+  </div>
+  {% endif %}
+
+  <script src="/static/js/ambient.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initAmbient('{{ profile.bg_effect or "particles" }}', '{{ profile.accent_color or "#8b5cf6" }}');
+    });
+  </script>
+</body>
+</html>

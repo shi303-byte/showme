@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Claim Identity | ShowMe{% endblock %}
+
+{% block content %}
+<div style="max-width: 440px; margin: 3.5rem auto; padding: 0 1rem;">
+  <div class="glass-box" style="padding: 2.5rem 2rem;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <h2 style="font-size: 1.8rem; font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 0.5rem;">Claim Identity</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Reserve your sovereign slug and build your portal.</p>
+    </div>
+
+    {% if error %}
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1.5rem;">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="/register">
+      <div class="form-group">
+        <label class="form-label">Desired Username (/usr/username)</label>
+        <input type="text" name="username" class="form-input" required pattern="[A-Za-z0-9_]{3,20}" placeholder="e.g. viper">
+        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Alpha-numeric only, 3-20 chars.</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" class="form-input" required placeholder="name@domain.com">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.75rem;">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-input" minlength="6" required placeholder="Minimum 6 characters">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">Synthesize Profile</button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.75rem; font-size: 0.85rem; color: var(--text-muted);">
+      Already have credentials? <a href="/login" style="color: var(--accent); font-weight: 600;">Sign In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

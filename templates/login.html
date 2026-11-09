@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Access Deck | ShowMe{% endblock %}
+
+{% block content %}
+<div style="max-width: 420px; margin: 4rem auto; padding: 0 1rem;">
+  <div class="glass-box" style="padding: 2.5rem 2rem;">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <h2 style="font-size: 1.8rem; font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 0.5rem;">Authenticate</h2>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Input your credentials to access your terminal.</p>
+    </div>
+
+    {% if error %}
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1.5rem;">
+        {{ error }}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="/login">
+      <div class="form-group">
+        <label class="form-label">Username or Email</label>
+        <input type="text" name="username" class="form-input" required autofocus placeholder="e.g. operative or owner">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.75rem;">
+        <label class="form-label">Keyphrase / Password</label>
+        <input type="password" name="password" class="form-input" required placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;">
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem;">Enter Dashboard</button>
+    </form>
+
+    <div style="text-align: center; margin-top: 1.75rem; font-size: 0.85rem; color: var(--text-muted);">
+      No assigned handle? <a href="/register" style="color: var(--accent); font-weight: 600;">Initialize profile</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

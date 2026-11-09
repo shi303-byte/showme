@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto; padding: 4rem 1.5rem;">
+  
+  <div style="text-align: center; max-width: 760px; margin: 0 auto 5rem;">
+    <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; color: #c084fc; margin-bottom: 1.5rem;">
+      <span style="width: 6px; height: 6px; border-radius: 50%; background: #a855f7; display: inline-block;"></span>
+      Next Gen Vanity Invites & Minimalist Personas
+    </div>
+    
+    <h1 style="font-size: 3.6rem; font-weight: 800; font-family: 'Syne', sans-serif; line-height: 1.08; letter-spacing: -0.04em; margin-bottom: 1.5rem;">
+      Curate your identity.<br>
+      <span style="background: linear-gradient(135deg, #f8fafc, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Command your invites.</span>
+    </h1>
+    
+    <p style="font-size: 1.15rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 2.5rem; font-weight: 400;">
+      A hyper-customizable sovereign profile engine and vanity routing gateway. Custom audio soundtracks, animated glass aesthetics, discord telemetry routing, and zero bloat.
+    </p>
+
+    <div style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+      {% if user %}
+        <a href="/dashboard" class="btn btn-primary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">Open Control Deck</a>
+        <a href="/usr/{{ user.username }}" class="btn btn-secondary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">View Live Profile</a>
+      {% else %}
+        <a href="/register" class="btn btn-primary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">Create Your URL</a>
+        <a href="/login" class="btn btn-secondary" style="padding: 0.85rem 1.75rem; font-size: 1rem;">Authenticate</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 5rem;">
+    <div class="glass-box" style="padding: 1.75rem;">
+      <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Registered Users</div>
+      <div style="font-size: 2.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">{{ total_users }}</div>
+    </div>
+    <div class="glass-box" style="padding: 1.75rem;">
+      <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Active Vanities</div>
+      <div style="font-size: 2.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">{{ total_invites }}</div>
+    </div>
+    <div class="glass-box" style="padding: 1.75rem;">
+      <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Signals Routed</div>
+      <div style="font-size: 2.2rem; font-weight: 700; font-family: 'JetBrains Mono', monospace;">{{ total_clicks }}</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 5rem;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+      <div>
+        <h2 style="font-size: 1.8rem; font-family: 'Syne', sans-serif; font-weight: 700;">Prominent Operatives</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem;">Explore real-time custom bio setups across the network.</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+      {% for op in featured %}
+      <a href="/usr/{{ op.username }}" class="glass-box" style="padding: 1.5rem; display: flex; align-items: center; gap: 1.25rem; transition: transform 0.2s ease, border-color 0.2s ease;">
+        <img src="{{ op.avatar_url or 'https://api.dicebear.com/7.x/bottts/svg?seed=' + op.username }}" alt="{{ op.username }}" style="width: 58px; height: 58px; border-radius: 14px; object-fit: cover; border: 1px solid var(--border);">
+        <div style="flex: 1; min-width: 0;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <span style="font-weight: 700; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ op.display_name or op.username }}</span>
+            {% if op.is_owner %}
+              <span class="owner-pill" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">ARCHITECT</span>
+            {% endif %}
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">/usr/{{ op.username }}</div>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;">
+          {{ op.views }} views
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="glass-box" style="padding: 3rem; text-align: center; border-color: rgba(139, 92, 246, 0.3);">
+    <h3 style="font-size: 2rem; font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 1rem;">Vanity URL System (domain/inv/slug)</h3>
+    <p style="max-width: 600px; margin: 0 auto 2rem; color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+      Convert standard Discord links into custom routing vanity portals. Inspect live server analytics, member counters, online presences, and expiration states with zero tracking overhead.
+    </p>
+    <a href="/register" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Initialize Vanity Deck</a>
+  </div>
+
+</div>
+{% endblock %}

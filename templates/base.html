@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ShowMe | Sovereign Vanity & Digital Identity{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <canvas id="ambient-canvas" class="ambient-canvas"></canvas>
+
+  <nav class="navbar">
+    <a href="/" class="brand">
+      <div class="brand-icon">S</div>
+      <span>ShowMe</span>
+    </a>
+    <div class="nav-links">
+      <a href="/" class="nav-link">Portal</a>
+      <a href="/download-source" class="nav-link" style="color: #34d399; display: flex; align-items: center; gap: 0.35rem;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download Zip
+      </a>
+      {% if user %}
+        <a href="/dashboard" class="nav-link">Control Deck</a>
+        <a href="/usr/{{ user.username }}" class="nav-link">My Identity</a>
+        {% if user.is_owner %}
+          <span class="owner-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Master Owner
+          </span>
+        {% endif %}
+        <a href="/logout" class="btn btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.8rem;">Disengage</a>
+      {% else %}
+        <a href="/login" class="nav-link">Access</a>
+        <a href="/register" class="btn btn-primary" style="padding: 0.45rem 1rem;">Claim Identity</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <main style="flex: 1; position: relative; z-index: 1;">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer style="padding: 2.5rem 2rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.85rem; position: relative; z-index: 1;">
+    <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1100px; margin: 0 auto; flex-wrap: gap;">
+      <div>ShowMe System Architecture &bull; Open Source Initiative</div>
+      <div style="display: flex; gap: 1rem;">
+        <span style="opacity: 0.7;">Zero Telemetry</span>
+        <span style="opacity: 0.7;">Full Vanity Routing</span>
+        <span style="opacity: 0.7;">High Fidelity Glass</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/ambient.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      initAmbient('aurora', '#8b5cf6');
+    });
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
